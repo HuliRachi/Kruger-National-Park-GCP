@@ -32,6 +32,14 @@ I built a "Data Pipeline" that collects information from the park gates, recepti
 
 ---
 
+### Diagram architecture
+
+<img src="architecture_diagram/architecture.png" alt="Diagram_Architecture" width="700" height="350">
+
+- Data(Kruger_data, Free_entrance, Gate_codes_data) comes fro different sources in a form of csv. I then ingest them to Cloud Storage in Landing folder to centralize them. From landing i ingest them to bronze for raw data, then i move them silver for cleaning and using SCD type 2 to keep the history record for incremental tables, then i move them to Gold layer where i aggregate them for business use case. All these steps done using airflow.
+
+---
+
 ## 🚀 What this project shows
 
 - **Handling Crowds:** It shows exactly how much busier the park gets during the "Free September" days.
