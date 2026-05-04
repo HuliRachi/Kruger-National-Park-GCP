@@ -233,3 +233,229 @@ drop table if exists `project.....huli.silver_dataset.quality_checks_park_entrie
 
 -- VISITORS TABLE
 
+create table if not exists `project.....huli.silver_dataset.visitors`(
+    VisitorID       string,
+    FirstName       string,
+    LastName        string,
+    ID_Passport_No  string,
+    Nationality     string,
+    WildCardMember  string,
+    DOB             string,
+    ContactNo       string,
+    ModifiedDate    timestamp,
+    InsertDate      timestamp,
+    is_quarantined  bool,
+    is_current      bool
+);
+
+--create a quality-checks temp table
+create or replace table `project.....huli.silver_dataset.quality_checks` as
+select * ,
+    case
+        when VisitorID is null or ID_Passport_No is null then TRUE
+        else FALSE
+    end is_quarantined
+from(
+    select * from `project.....huli.bronze_dataset.visitors`
+);
+
+--apply scd type 2
+merge into `project.....huli.silver_dataset.visitors` as target
+using `project.....huli.silver_dataset.quality_checks` as source
+on target.VisitorID = source.VisitorID
+and target.is_current = TRUE
+
+--mark existing records as history
+when matched and (
+    target.VisitorID <> source.VisitorID OR
+    target.FirstName <> source.FirstName OR
+    target.LastName <> source.LastName OR
+    target.ID_Passport_No <> source.ID_Passport_No OR
+    target.Nationality <> source.Nationality OR
+    target.WildCardMember <> source.WildCardMember OR
+    target.DOB <> source.DOB OR
+    target.ContactNo <> source.ContactNo OR
+    
+)
+then update set
+    target.is_current = FALSE,
+    target.ModifiedDate = CURRENT_TIMESTAMP()
+
+-- insert into new table
+when not matched
+then insert(
+    VisitorID,
+    FirstName,
+    LastName,
+    ID_Passport_No,
+    Nationality,
+    WildCardMember,
+    DOB,
+    ContactNo,
+    ModifiedDate,
+    InsertDate,
+    is_quarantined,
+    is_current      
+)
+values(
+    source.VisitorID,
+    source.FirstName,
+    source.LastName,
+    source.ID_Passport_No,
+    source.Nationality,
+    source.WildCardMember,
+    source.DOB,
+    source.ContactNo,
+    CURRENT_TIMESTAMP(),
+    CURRENT_TIMESTAMP(),
+    source.is_quarantined,
+    TRUE
+)
+
+--drop quality checks table
+drop table if exists `project.....huli.silver_dataset.quality_checks`;
+
+-- SEPTEMBER_FREE_ENTRY
+create table if not exists `project.....huli.silver_dataset.september_free_entry`(
+    ClaimID         string,
+    TransID         string,
+    VisitorID       string,
+    EntryID         string,
+    CampID          string,
+    EntryDate       timestamp,
+    PayorType       string,
+    AmountWaived    float64,
+    InsertDate      timestamp,
+    ModifiedDate    timestamp,
+    is_quarantined  boolean,
+    is_current      boolean
+
+);
+
+--create quality check table
+create or replace table `project.....huli.silver_dataset.quality_checks` as
+select *, 
+    case
+        when ClaimID is null then TRUE
+        else FALSE
+    end as is_quarantined
+from(
+    select * from `project.....huli.bronze_dataset.september_free_entry`
+);
+
+--apply scd type2 
+merge into `project.....huli.silver_dataset.september_free_entry` as target
+using `project.....huli.quality_checks` as source
+on target.CampID = source.CampID
+and target.is_quarantined = TRUE
+
+--mark existing record
+when matched and (
+    target.ClaimID <> source.ClaimID OR 
+    target.TransID <> source.TransID OR
+    target.VisitorID <> source.VisitorID OR
+    target.EntryID <> source.EntryID OR
+    target.CampID <> source.CampID OR
+    target.EntryDate <> source.EntryDate OR
+    target.PayorType <> source.PayorType OR
+    target.AmountWaived <> source.AmountWaived OR
+    target.InsertDate <> source.InsertDate OR
+    target.is_quarantined <> source.is_quarantined
+    
+)
+--insert new and update
+when not matched
+then insert(
+    ClaimID,
+    TransID,
+    VisitorID,
+    EntryID,
+    CampID,
+    EntryDate,
+    PayorType,
+    AmountWaived,
+    InsertDate,
+    ModifiedDate,
+    is_quarantined,
+    is_current      
+)
+values(
+    source.ClaimID,
+    source.TransID,
+    source.VisitorID,
+    source.EntryID,
+    source.CampID,
+    source.EntryDate,
+    source.PayorType,
+    source.AmountWaived,
+    CURRENT_TIMESTAMP(),
+    CURRENT_TIMESTAMP(),
+    source.is_quarantined,
+    TRUE  
+);
+
+--drop quality checks table
+drop table if exists `project.....huli.silver_dataset.quality_checks`;
+
+---KRUGER GATES
+create table if not exists `project.....huli.silver_dataset.kruger_gates`(
+    GateID          string,
+    GateName        string,
+    KrugerCampName  string,
+    ModifiedDate    timestamp,
+    is_quarantined  boolean,
+    is_current      boolean
+);
+
+--create quality checks table
+create or replace table `project.....huli.silver_dataset.quality_checks` as
+select *, 
+    case
+        when GateID is null then TRUE
+        else FALSE
+    end as is_quarantined
+from(
+    select * from `project.....huli.bronze_dataset.kruger_gates`
+);
+
+--apply scd type 2
+merge into `project.....huli.silver_dataset.kruger_gates` as target
+using `project.....huli.silver_dataset.quality_checks` as source
+on target.GateID = source.GateID
+and target.is_current = TRUE
+
+--mark existing records
+when matched and (
+    target.GateID <> source.GateID OR
+    target.GateName <> source.GateName OR
+    target.KrugerCampName <> source.KrugerCampName OR
+    target.is_quarantined <> source.is_quarantined
+    
+)
+
+then update set
+    target.is_current = FALSE,
+    target.ModifiedDate = CURRENT_TIMESTAMP()
+
+--insert new and update records 
+
+when not matched
+then insert(
+    GateID,
+    GateName,
+    KrugerCampName,
+    ModifiedDate,
+    is_quarantined,
+    is_current      
+)
+values(
+    source.GateID,
+    source.GateName,
+    source.KrugerCampName,
+    CURRENT_TIMESTAMP(),
+    source.is_quarantined,
+    TRUE  
+);
+
+--drop quality check table
+drop table if exists `project.....huli.silver_dataset.quality_checks`
