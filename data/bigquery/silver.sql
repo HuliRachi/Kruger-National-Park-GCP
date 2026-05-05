@@ -48,18 +48,18 @@ from (
 -- Incremental tables (billing, park_entries, visitors, september_free, kruger_gates)
 
 create table if not exists `project.....huli.silver_dataset.billing`(
-    TransID string,
-    EntryID string,
-    VisitorID string,
-    GuideID string,
-    AccID string,
-    VisitDate string,
+    TransID         string,
+    EntryID         string,
+    VisitorID       string,
+    GuideID         string,
+    AccID           string,
+    VisitDate       timestamp,
     ConservationFee float64,
-    PaymentType string,
-    InsertDate timestamp,
-    modifiedDate timestamp, --new
-    is_current boolean,
-    is_quarantined boolean
+    PaymentType     string,
+    InsertDate      timestamp,
+    modifiedDate    timestamp, --new
+    is_current      boolean,
+    is_quarantined  boolean
 
 );
 
@@ -74,7 +74,7 @@ select distinct TransID, EntryID,
     PaymentType,
     InsertDate,
 case
-    when VisitorID is null or GuideID is null or AccID is null then TRUE
+    when VisitorID is null or AccID is null then TRUE
     else FALSE
 end as is_quarantined
 
