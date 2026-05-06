@@ -19,7 +19,7 @@ ARGS ={
 with DAG (
     dag_id = "parent_dag",
     schedule_interval = "0 5 * * *",
-    descrription = "Parent DAG to trigger Pyspark and BigQuery DAGS",
+    description = "Parent DAG to trigger Pyspark and BigQuery DAGS",
     default_args = ARGS,
     tags = ["parent", "orchestration", "etl"]
 
