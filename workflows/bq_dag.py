@@ -28,7 +28,7 @@ ARGS = {
     "email":["***@gmail.com"],
     "email_on_success":False,
     "retries":1,
-    "retry_delay":timedelta(minute=5)
+    "retry_delay":timedelta(minutes=5)
 }
 
 with DAG(
