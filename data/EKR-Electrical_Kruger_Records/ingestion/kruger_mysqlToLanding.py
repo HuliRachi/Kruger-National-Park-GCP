@@ -98,23 +98,27 @@ def move_existing_files_to_archive(table):
         log_event("INFO", f"Moved {file} to {archive_path}", table=table)
 
 # function to get latest watermark
-def get_latest_watermark(table_name): ##if is incremental go to audit table/config table, get the timestamp using select
+def get_latest_watermark(table_name): 
     query = f"""
         SELECT MAX(load_timestamp) AS latest_timestamp
         FROM `{BQ_CONFIG_TABLE}`
         WHERE tablename = '{table_name}'
     """
     query_job = bq_client.query(query)
-    result = query_job.result()
-    for row in result:
-        return row.latest_timestamp if row.latest_timestamp else "1900-01-01 00:00:00" ##return latest timestamp
-    return "1900-01-01 00:00:00"
+    result = list(query_job.result())
+    
+    # Check if results list is empty, or if the field value itself is None
+    if not result or result[0].latest_timestamp is None:
+        return "1900-01-01 00:00:00"
+        
+    return str(result[0].latest_timestamp)
+
 
 
 # Step 7 Function to Extract Data from MySQL and Save to GCS
 def extract_and_save_to_landing(table, load_type, watermark_col):
     try: ## check first if the file is incremental or full
-        last_watermark = get_latest_watermark(table) if load_type.lower() == "incremental" else None ##if is incremental go to audit table/config table, get the timestamp using select
+        last_watermark = get_latest_watermark(table) if load_type.lower() == "increment" else None ##if is incremental go to audit table/config table, get the timestamp using select
         log_event("INFO", f"Latest watermark for {table}: {last_watermark}", table=table)
 
         query = f"(SELECT * FROM {table}) AS t" if load_type.lower() == "full" else \
