@@ -24,8 +24,9 @@ BQ_LOG_TABLE = f"{BQ_PROJECT}.temp_dataset.pipeline_logs"
 BQ_TEMP_PATH = f"{GCS_BUCKET}/temp/"
 
 #mysql configuration
-MYSQL_CONFIG ={ #change database port
-    "url": "jdbc:mysql://34.35.133.255:3306/kruger-db?useSSL=true&allowPublicKeyRetrieval=true", 
+MYSQL_CONFIG ={ 
+    # Added &zeroDateTimeBehavior=convertToNull to the connection URL string
+    "url": "jdbc:mysql://34.35.133.255:3306/kruger-db?useSSL=true&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull", 
     "driver": "com.mysql.cj.jdbc.Driver",
     "user": "myuser",
     "password": "Rachyhuly@98"
@@ -67,7 +68,7 @@ def save_logs_to_bigquery():
     """save logs to bigquery"""
     if log_entries:
         log_df = spark.createDataFrame(log_entries)
-        log_df.write.format("bigquery").option("table", BQ_LOG_TABLE).option("temporaryGcsBucket", BQ_TEMP_PATH).model("append").save()
+        log_df.write.format("bigquery").option("table", BQ_LOG_TABLE).option("temporaryGcsBucket", BQ_TEMP_PATH).mode("append").save()
         print("Logs stored in Bigquery for future analysis")
 
 #step 6 - function to move existing files to archive
