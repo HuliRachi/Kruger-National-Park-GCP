@@ -142,7 +142,7 @@ def extract_and_save_to_landing(table, load_type, watermark_col):
         # Insert Audit Entry
         audit_df = spark.createDataFrame([ 
             (table, load_type, df.count(), datetime.datetime.now(), "SUCCESS")], 
-            ["tablename", "load_type", "record_count", "load_timestamp", "status"])
+            ["tablename", "loadtype", "record_count", "load_timestamp", "status"])
 
         (audit_df.write.format("bigquery")
             .option("table", BQ_CONFIG_TABLE)
