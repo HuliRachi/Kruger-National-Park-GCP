@@ -18,14 +18,14 @@ ARCHIVE_PATH = f"gs://{GCS_BUCKET}/landing/{SANPARK_NAME}/archive/"
 CONFIG_FILE_PATH = f"gs://{GCS_BUCKET}/configs/config.csv"
 
 #BigQuery configuration
-BQ_PROJECT = "project.....huli" # change name
+BQ_PROJECT = "project-a2ce378b-71f9-4087-95b" 
 BQ_CONFIG_TABLE = f"{BQ_PROJECT}.temp_dataset.config"
 BQ_LOG_TABLE = f"{BQ_PROJECT}.temp_dataset.pipeline_logs"
 BQ_TEMP_PATH = f"{GCS_BUCKET}/temp/"
 
 #mysql configuration
 MYSQL_CONFIG ={ #change database port
-    "url": "jdbc:mysql://34.35.154.51:3306/hospital_a_db?useSSL=true&allowPublicKeyRetrieval=true", #change database name
+    "url": "jdbc:mysql://34.35.133.255:3306/kruger-db?useSSL=true&allowPublicKeyRetrieval=true", 
     "driver": "com.mysql.cj.jdbc.Driver",
     "user": "myuser",
     "password": "Rachyhuly@98"
