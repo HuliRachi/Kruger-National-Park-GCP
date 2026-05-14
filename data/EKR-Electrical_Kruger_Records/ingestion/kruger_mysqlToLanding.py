@@ -11,8 +11,8 @@ storage_client = storage.Client()
 bq_client = bigquery.Client()
 
 #GCP configuration
-GCS_BUCKET = "bucket name..............." #change name
-SANPARK_NAME = "Kruger-National-Park"
+GCS_BUCKET = "kruger-bucket" 
+SANPARK_NAME = "kruger-national-park"
 LANDING_PATH = f"gs://{GCS_BUCKET}/landing/{SANPARK_NAME}/"
 ARCHIVE_PATH = f"gs://{GCS_BUCKET}/landing/{SANPARK_NAME}/archive/"
 CONFIG_FILE_PATH = f"gs://{GCS_BUCKET}/configs/config.csv"
