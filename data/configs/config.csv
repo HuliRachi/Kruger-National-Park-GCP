@@ -1,6 +1,6 @@
 database,tablename,loadtype,watermark,is_active,target_path
 kruger-mysql-db,accommodation,full,,1,krugerpark
-kruger-mysql-db,billing,increment,modified,1,krugerpark
+kruger-mysql-db,billing,increment,ModifiedDate,1,krugerpark
 kruger-mysql-db,field_guides,full,,1,krugerpark
-kruger-mysql-db,park_entries,increment,modified,1,krugerpark
-kruger-mysql-db,visitors,increment,modified,1,krugerpark
+kruger-mysql-db,park_entries,increment,ModifiedDate,1,krugerpark
+kruger-mysql-db,visitors,increment,ModifiedDate,1,krugerpark

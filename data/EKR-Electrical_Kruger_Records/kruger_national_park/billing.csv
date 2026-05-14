@@ -1,4 +1,4 @@
-TransID,EntryID,VisitorID,GuideID,AccID,VisitDate,ConservationFee,AccommFee,ActivityFee,TotalAmount,PaymentType,InsertDate
+TransID,EntryID,VisitorID,GuideID,AccID,VisitDate,ConservationFee,AccommFee,ActivityFee,TotalAmount,PaymentType,ModifiedDate
 TRX-4744854,ENT-246316,VID-23434,N/A,ACC-044,2024-05-20,460.0,856.0,0.0,1316.0,WildCard_Credit,2024-05-20 11:00:00
 TRX-2571945,ENT-329258,VID-40495,FG-065,ACC-039,2024-01-17,110.0,2818.0,750.0,3678.0,Credit Card,2024-01-17 08:00:00
 TRX-5667265,ENT-948749,VID-10851,FG-098,ACC-011,2024-04-22,460.0,1214.0,750.0,2424.0,Cash,2024-04-22 15:00:00
