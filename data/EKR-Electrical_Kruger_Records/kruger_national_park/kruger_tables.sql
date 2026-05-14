@@ -20,7 +20,7 @@ create table billing(
     ActivityFee         decimal(10,2)  not null,
     TotalAmount         decimal(10,2)  not null,
     PaymentType         varchar(50)    not null,
-    InsertDate          TIMESTAMP      not null,
+    ModifiedDate         TIMESTAMP      not null,
     constraint pk_billing primary key (TransID)
 );
 
