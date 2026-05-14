@@ -5,9 +5,9 @@ from pyspark.sql.functions import input_file_name, when
 spark = SparkSession.builder.appName("Kruger Free Entrance").getOrCreate()
 
 #configure variables
-BUCKET_NAME = "bucketname............."
+BUCKET_NAME = "kruger-bucket"
 FREE_ENTRANCE_BUCKET_PATH = f"gs://{BUCKET_NAME}/landing/free_entrance/*.csv"
-BQ_TABLE = "project.....huli.bronze_dataset_september_free_entry"
+BQ_TABLE = "project-a2ce378b-71f9-4087-95b.bronze_dataset_september_free_entry"
 TEMP_GCS_BUCKET = f"{BUCKET_NAME}/temp"
 
 #steep 1 read from free-entrance source

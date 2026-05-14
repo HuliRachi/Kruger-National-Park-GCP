@@ -5,9 +5,9 @@ from airflow.utils.dates import days_ago
 from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobOperator
 
 
-PROJECT_ID = "project.....huli" #change name
+PROJECT_ID = "project-a2ce378b-71f9-4087-95b" 
 REGION = "africa-south1"
-CLUSTER_NAME = "my_demo_cluster2" # verify if name is correct
+CLUSTER_NAME = "kruger-cluster" 
 COMPOSER_BUCKET = "africa-south.............." # composer bucket name
 
 GCS_JOB_FILE_1 = f"gs://{COMPOSER_BUCKET}/data/INGESTION/kruger_mysqlToLanding.py"

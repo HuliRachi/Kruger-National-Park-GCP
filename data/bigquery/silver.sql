@@ -1,25 +1,25 @@
 -- Full Load tables (accommodation, field_guides)
 
-create table if not exists `project.....huli.silver_dataset.accommodation`(
+create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.accommodation`(
     AccID           string,
     CampID          string,
     UnitType        string,
     is_quarantined  boolean
 );
-truncate table  `project.....huli.silver_dataset.accommodation`;
+truncate table  `project-a2ce378b-71f9-4087-95b.silver_dataset.accommodation`;
 
-insert into `project.....huli.silver_dataset.accommodation`
+insert into `project-a2ce378b-71f9-4087-95b.silver_dataset.accommodation`
 select distinct AccID, CampID, UnitType, 
         case 
             when AccID in null or CampID is null then TRUE
             else FALSE
         end as is_quarantined
 from (
-    select AccID, CampID, UnitType from 'project.....huli.bronze_dataset.accommodation'
+    select AccID, CampID, UnitType from 'project-a2ce378b-71f9-4087-95b.bronze_dataset.accommodation'
 );
 ---------------------
 
-create table if not exists `project.....huli.silver_dataset.field_guides`(
+create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.field_guides`(
     GuideID         string,
     FirstName       string,
     LastName        string,
@@ -29,9 +29,9 @@ create table if not exists `project.....huli.silver_dataset.field_guides`(
     is_quarantined  boolean
 );
 
-truncate table `project....huli.silver_dataset.field_guides`;
+truncate table `project-a2ce378b-71f9-4087-95b.silver_dataset.field_guides`;
 
-insert into `project....huli.silver_dataset.field_guides`
+insert into `project-a2ce378b-71f9-4087-95b.silver_dataset.field_guides`
 select distinct GuideID, FirstName, LastName, Specialization, CampID, PermitNo
 case
     when GuideID is null or CampID is null the TRUE
@@ -39,7 +39,7 @@ case
 end as is_quarantined
 
 from (
-    select * from `project....huli.bronze_dataset.field_guides`
+    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.field_guides`
 );
 
 ------------------
@@ -47,7 +47,7 @@ from (
 
 -- Incremental tables (billing, park_entries, visitors, september_free, kruger_gates)
 
-create table if not exists `project.....huli.silver_dataset.billing`(
+create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.billing`(
     TransID         string,
     EntryID         string,
     VisitorID       string,
@@ -64,7 +64,7 @@ create table if not exists `project.....huli.silver_dataset.billing`(
 );
 
 --create quality check temp table
-create or replace table `project.....huli.silver_dataset.quality_checks` as
+create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as
 select distinct TransID, EntryID,
     VisitorID,
     GuideID,
@@ -87,12 +87,12 @@ from(
     ConservationFee,
     PaymentType,
     InsertDate
-    from `project....huli.bronze_dataset.billing`
+    from `project-a2ce378b-71f9-4087-95b.bronze_dataset.billing`
 );
 
 --apply SCD type2
-merge int `project.....huli.silver_dataset.billing` as target
-using `project.....huli.silver_dataset.quality_checks` as source
+merge int `project-a2ce378b-71f9-4087-95b.silver_dataset.billing` as target
+using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as source
 on target.VisitorID = source.VisitorID
 and target.is_current = TRUE
 
@@ -145,10 +145,10 @@ values(
     source.is_quarantined
 )
 -- drop quality checks table
-drop table if exists `project.....huli.silver_dataset.quality_checks`;
+drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
 
 --PARK_ENTRIES TABLE 
-create table if not exists  `project.....huli.silver_dataset.park_entries`(
+create table if not exists  `project-a2ce378b-71f9-4087-95b.silver_dataset.park_entries`(
     EntryID         string,
     VisitorID       string,
     EntryDate       timestamp,
@@ -163,19 +163,19 @@ create table if not exists  `project.....huli.silver_dataset.park_entries`(
 );
 
 --create quality checks table
-create or replace table `project.....huli.silver_dataset.quality_checks_park_entries`as
+create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks_park_entries`as
 select * ,
 case 
     when EntryID is null or VisitorID is null or AccID is null then TRUE
     else FALSE
 end is_quarantined
 from(
-    select * from `project.....huli.bronze_dataset.park_entries`
+    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.park_entries`
 );
 --apply SCD type 2
 
-merge into `project.....huli.silver_dataset.park_entries` as target
-using `project.....huli.silver_dataset.quality_checks_park_entries` as source
+merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.park_entries` as target
+using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks_park_entries` as source
 on target.EntryID = source.EntryID
 and target.is_current = TRUE
 
@@ -229,11 +229,11 @@ values(
 );
 
 --drop quality checks table
-drop table if exists `project.....huli.silver_dataset.quality_checks_park_entries`
+drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks_park_entries`
 
 -- VISITORS TABLE
 
-create table if not exists `project.....huli.silver_dataset.visitors`(
+create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.visitors`(
     VisitorID       string,
     FirstName       string,
     LastName        string,
@@ -249,19 +249,19 @@ create table if not exists `project.....huli.silver_dataset.visitors`(
 );
 
 --create a quality-checks temp table
-create or replace table `project.....huli.silver_dataset.quality_checks` as
+create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as
 select * ,
     case
         when VisitorID is null or ID_Passport_No is null then TRUE
         else FALSE
     end is_quarantined
 from(
-    select * from `project.....huli.bronze_dataset.visitors`
+    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.visitors`
 );
 
 --apply scd type 2
-merge into `project.....huli.silver_dataset.visitors` as target
-using `project.....huli.silver_dataset.quality_checks` as source
+merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.visitors` as target
+using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as source
 on target.VisitorID = source.VisitorID
 and target.is_current = TRUE
 
@@ -313,10 +313,10 @@ values(
 )
 
 --drop quality checks table
-drop table if exists `project.....huli.silver_dataset.quality_checks`;
+drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
 
 -- SEPTEMBER_FREE_ENTRY
-create table if not exists `project.....huli.silver_dataset.september_free_entry`(
+create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.september_free_entry`(
     ClaimID         string,
     TransID         string,
     VisitorID       string,
@@ -333,19 +333,19 @@ create table if not exists `project.....huli.silver_dataset.september_free_entry
 );
 
 --create quality check table
-create or replace table `project.....huli.silver_dataset.quality_checks` as
+create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as
 select *, 
     case
         when ClaimID is null then TRUE
         else FALSE
     end as is_quarantined
 from(
-    select * from `project.....huli.bronze_dataset.september_free_entry`
+    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.september_free_entry`
 );
 
 --apply scd type2 
-merge into `project.....huli.silver_dataset.september_free_entry` as target
-using `project.....huli.quality_checks` as source
+merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.september_free_entry` as target
+using `project-a2ce378b-71f9-4087-95b.quality_checks` as source
 on target.CampID = source.CampID
 and target.is_quarantined = TRUE
 
@@ -395,10 +395,10 @@ values(
 );
 
 --drop quality checks table
-drop table if exists `project.....huli.silver_dataset.quality_checks`;
+drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
 
 ---KRUGER GATES
-create table if not exists `project.....huli.silver_dataset.kruger_gates`(
+create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.kruger_gates`(
     GateID          string,
     GateName        string,
     KrugerCampName  string,
@@ -408,19 +408,19 @@ create table if not exists `project.....huli.silver_dataset.kruger_gates`(
 );
 
 --create quality checks table
-create or replace table `project.....huli.silver_dataset.quality_checks` as
+create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as
 select *, 
     case
         when GateID is null then TRUE
         else FALSE
     end as is_quarantined
 from(
-    select * from `project.....huli.bronze_dataset.kruger_gates`
+    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.kruger_gates`
 );
 
 --apply scd type 2
-merge into `project.....huli.silver_dataset.kruger_gates` as target
-using `project.....huli.silver_dataset.quality_checks` as source
+merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.kruger_gates` as target
+using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as source
 on target.GateID = source.GateID
 and target.is_current = TRUE
 
@@ -458,4 +458,4 @@ values(
 );
 
 --drop quality check table
-drop table if exists `project.....huli.silver_dataset.quality_checks`
+drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`
