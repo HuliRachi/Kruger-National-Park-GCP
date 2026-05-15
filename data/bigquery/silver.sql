@@ -15,7 +15,7 @@ select distinct AccID, CampID, UnitType,
             else FALSE
         end as is_quarantined
 from (
-    select AccID, CampID, UnitType from 'project-a2ce378b-71f9-4087-95b.bronze_dataset.accommodation'
+    select AccID, CampID, UnitType from `project-a2ce378b-71f9-4087-95b.bronze_dataset.accommodation`
 );
 ---------------------
 
@@ -33,8 +33,8 @@ truncate table `project-a2ce378b-71f9-4087-95b.silver_dataset.field_guides`;
 
 insert into `project-a2ce378b-71f9-4087-95b.silver_dataset.field_guides`
 select distinct GuideID, FirstName, LastName, Specialization, CampID, PermitNo
-case
-    when GuideID is null or CampID is null the TRUE
+case,
+    when GuideID is null or CampID is null then TRUE
     else FALSE
 end as is_quarantined
 
