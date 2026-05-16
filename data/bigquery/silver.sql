@@ -316,10 +316,11 @@ create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.septem
     VisitorID       string,
     EntryID         string,
     CampID          string,
-    EntryDate       timestamp,
-    PayorType       string,
-    AmountWaived    float64,
-    InsertDate      timestamp,
+    
+    Verified_SA_ID  string,
+    
+
+    InsertedDate      timestamp,
     ModifiedDate    timestamp,
     is_quarantined  boolean,
     is_current      boolean
@@ -328,35 +329,39 @@ create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.septem
 
 --create quality check table
 create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as
-select *, 
+select ClaimID,TransID,VisitorID,EntryID,CampID,CAST(Verified_SA_ID AS STRING) as Verified_SA_ID,
     case
-        when ClaimID is null then TRUE
+        when ClaimID is null or VisitorID is null then TRUE
         else FALSE
     end as is_quarantined
 from(
-    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.september_free_entry`
+    select 
+    ClaimID,TransID,VisitorID,EntryID,CampID,Verified_SA_ID
+     from `project-a2ce378b-71f9-4087-95b.bronze_dataset.september_free_entry`
 );
 
 --apply scd type2 
 merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.september_free_entry` as target
-using `project-a2ce378b-71f9-4087-95b.quality_checks` as source
-on target.CampID = source.CampID
-and target.is_quarantined = TRUE
+using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as source
+on target.ClaimID = source.ClaimID
+and target.is_current = TRUE
 
 --mark existing record
 when matched and (
-    target.ClaimID <> source.ClaimID OR 
+    
     target.TransID <> source.TransID OR
     target.VisitorID <> source.VisitorID OR
     target.EntryID <> source.EntryID OR
     target.CampID <> source.CampID OR
-    target.EntryDate <> source.EntryDate OR
-    target.PayorType <> source.PayorType OR
-    target.AmountWaived <> source.AmountWaived OR
-    target.InsertDate <> source.InsertDate OR
+    
+    target.Verified_SA_ID <> source.Verified_SA_ID OR
+    
     target.is_quarantined <> source.is_quarantined
     
 )
+then update set
+    target.is_current = FALSE, 
+    target.ModifiedDate = CURRENT_TIMESTAMP()
 --insert new and update
 when not matched
 then insert(
@@ -365,12 +370,12 @@ then insert(
     VisitorID,
     EntryID,
     CampID,
-    EntryDate,
-    PayorType,
-    AmountWaived,
-    InsertDate,
-    ModifiedDate,
+    
+    Verified_SA_ID,
+    
     is_quarantined,
+    InsertedDate,
+    ModifiedDate,
     is_current      
 )
 values(
@@ -379,12 +384,12 @@ values(
     source.VisitorID,
     source.EntryID,
     source.CampID,
-    source.EntryDate,
-    source.PayorType,
-    source.AmountWaived,
-    CURRENT_TIMESTAMP(),
-    CURRENT_TIMESTAMP(),
+    
+    source.Verified_SA_ID,
+    
     source.is_quarantined,
+    CURRENT_TIMESTAMP(),
+    CURRENT_TIMESTAMP(),
     TRUE  
 );
 
@@ -392,35 +397,37 @@ values(
 drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
 
 ---KRUGER GATES
-create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.kruger_gates`(
+create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.gate_codes`(
     GateID          string,
     GateName        string,
     KrugerCampName  string,
-    ModifiedDate    timestamp,
+
     is_quarantined  boolean,
+    InsertedDate    timestamp,
+    ModifiedDate    timestamp,
     is_current      boolean
 );
 
 --create quality checks table
 create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as
-select *, 
+select GateID, GateName, KrugerCampName,
     case
         when GateID is null then TRUE
         else FALSE
     end as is_quarantined
 from(
-    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.kruger_gates`
+    select GateID, GateName, KrugerCampName from `project-a2ce378b-71f9-4087-95b.bronze_dataset.gate_codes`
 );
 
 --apply scd type 2
-merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.kruger_gates` as target
+merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.gate_codes` as target
 using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as source
 on target.GateID = source.GateID
 and target.is_current = TRUE
 
 --mark existing records
 when matched and (
-    target.GateID <> source.GateID OR
+    
     target.GateName <> source.GateName OR
     target.KrugerCampName <> source.KrugerCampName OR
     target.is_quarantined <> source.is_quarantined
