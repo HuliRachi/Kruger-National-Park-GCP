@@ -446,6 +446,7 @@ then insert(
     GateName,
     KrugerCampName,
     ModifiedDate,
+    InsertedDate,
     is_quarantined,
     is_current      
 )
@@ -453,6 +454,7 @@ values(
     source.GateID,
     source.GateName,
     source.KrugerCampName,
+    CURRENT_TIMESTAMP(),
     CURRENT_TIMESTAMP(),
     source.is_quarantined,
     TRUE  
