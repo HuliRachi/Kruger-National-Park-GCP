@@ -5,10 +5,10 @@ from pyspark.sql.functions import input_file_name, when
 spark = SparkSession.builder.appName("Kruger Free Entrance").getOrCreate()
 
 #configure variables
-BUCKET_NAME = "kruger-bucket"
-FREE_ENTRANCE_BUCKET_PATH = f"gs://{BUCKET_NAME}/landing/september_free_entry/*.csv"
+BUCKET_NAME = "kruger-national-park-bucket"
+FREE_ENTRANCE_BUCKET_PATH = f"gs://{BUCKET_NAME}/landing-folder/september_free_entry/*.csv"
 BQ_TABLE = "project-a2ce378b-71f9-4087-95b.bronze_dataset.september_free_entry"
-TEMP_GCS_BUCKET = f"{BUCKET_NAME}/temp"
+TEMP_GCS_BUCKET = f"{BUCKET_NAME}/temp-folder"
 
 #steep 1 read from free-entrance source
 free_entrance_df = spark.read.csv(FREE_ENTRANCE_BUCKET_PATH, header=True)

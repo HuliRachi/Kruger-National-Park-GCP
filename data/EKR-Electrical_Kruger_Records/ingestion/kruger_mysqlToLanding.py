@@ -11,17 +11,17 @@ storage_client = storage.Client()
 bq_client = bigquery.Client()
 
 #GCP configuration
-GCS_BUCKET = "kruger-bucket" 
-SANPARK_NAME = "kruger-national-park"
-LANDING_PATH = f"gs://{GCS_BUCKET}/landing/{SANPARK_NAME}/"
-ARCHIVE_PATH = f"gs://{GCS_BUCKET}/landing/{SANPARK_NAME}/archive/"
-CONFIG_FILE_PATH = f"gs://{GCS_BUCKET}/configs/config.csv"
+GCS_BUCKET = "kruger-national-park-bucket" 
+SANPARK_NAME = "kruger"
+LANDING_PATH = f"gs://{GCS_BUCKET}/landing-folder/{SANPARK_NAME}/"
+ARCHIVE_PATH = f"gs://{GCS_BUCKET}/landing-folder/{SANPARK_NAME}/archive/"
+CONFIG_FILE_PATH = f"gs://{GCS_BUCKET}/configs-folder/config.csv"
 
 #BigQuery configuration
 BQ_PROJECT = "project-a2ce378b-71f9-4087-95b" 
 BQ_CONFIG_TABLE = f"{BQ_PROJECT}.temp_dataset.config"
 BQ_LOG_TABLE = f"{BQ_PROJECT}.temp_dataset.pipeline_logs"
-BQ_TEMP_PATH = f"{GCS_BUCKET}/temp/"
+BQ_TEMP_PATH = f"{GCS_BUCKET}/temp-folder/"
 
 #mysql configuration
 MYSQL_CONFIG ={ 
@@ -51,7 +51,7 @@ def log_event(event_type, message, table=None):
 def save_logs_to_gcs():
     """save logs to a json file and upload to gcs"""
     log_filename = f"pipeline_log_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.json"
-    log_filepath = f"temp/pipeline_logs/{log_filename}"
+    log_filepath = f"temp-folder/pipeline_logs/{log_filename}"
     json_data = json.dumps(log_entries, indent=4)
 
     #get gcs bucket
@@ -74,7 +74,7 @@ def save_logs_to_bigquery():
 #step 6 - function to move existing files to archive
 
 def move_existing_files_to_archive(table):
-    blobs = list(storage_client.bucket(GCS_BUCKET).list_blobs(prefix=f"landing/{SANPARK_NAME}/{table}/")) ##step 6, 1
+    blobs = list(storage_client.bucket(GCS_BUCKET).list_blobs(prefix=f"landing-folder/{SANPARK_NAME}/{table}/")) ##step 6, 1
     existing_files = [blob.name for blob in blobs if blob.name.endswith(".json")]
 
     if not existing_files:
@@ -89,7 +89,7 @@ def move_existing_files_to_archive(table):
         year, month, day = date_part[-4:], date_part[2:4], date_part[:2]
 
         # Move to Archive
-        archive_path = f"landing/{SANPARK_NAME}/archive/{table}/{year}/{month}/{day}/{file.split('/')[-1]}"
+        archive_path = f"landing-folder/{SANPARK_NAME}/archive/{table}/{year}/{month}/{day}/{file.split('/')[-1]}"
         destination_blob = storage_client.bucket(GCS_BUCKET).blob(archive_path)
 
         # Copy file to archive and delete original
@@ -136,7 +136,7 @@ def extract_and_save_to_landing(table, load_type, watermark_col):
         log_event("SUCCESS", f" Successfully extracted data from {table}", table=table)
 
         today = datetime.datetime.today().strftime('%d%m%Y')
-        JSON_FILE_PATH = f"landing/{SANPARK_NAME}/{table}/{table}_{today}.json"
+        JSON_FILE_PATH = f"landing-folder/{SANPARK_NAME}/{table}/{table}_{today}.json"
 
         bucket = storage_client.bucket(GCS_BUCKET)
         blob = bucket.blob(JSON_FILE_PATH)

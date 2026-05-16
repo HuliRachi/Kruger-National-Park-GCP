@@ -11,7 +11,7 @@ truncate table  `project-a2ce378b-71f9-4087-95b.silver_dataset.accommodation`;
 insert into `project-a2ce378b-71f9-4087-95b.silver_dataset.accommodation`
 select distinct AccID, CampID, UnitType, 
         case 
-            when AccID in null or CampID is null then TRUE
+            when AccID is null or CampID is null then TRUE
             else FALSE
         end as is_quarantined
 from (
@@ -32,8 +32,8 @@ create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.field_
 truncate table `project-a2ce378b-71f9-4087-95b.silver_dataset.field_guides`;
 
 insert into `project-a2ce378b-71f9-4087-95b.silver_dataset.field_guides`
-select distinct GuideID, FirstName, LastName, Specialization, CampID, PermitNo
-case,
+select distinct GuideID, FirstName, LastName, Specialization, CampID, PermitNo,
+case
     when GuideID is null or CampID is null then TRUE
     else FALSE
 end as is_quarantined
@@ -46,74 +46,53 @@ from (
 
 
 -- Incremental tables (billing, park_entries, visitors, september_free, kruger_gates)
-
+-------------------------------------------------------------------------------------------------------------------------------------------
 create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.billing`(
-    TransID         string,
-    EntryID         string,
-    VisitorID       string,
-    GuideID         string,
-    AccID           string,
-    VisitDate       timestamp,
-    ConservationFee float64,
-    PaymentType     string,
-    InsertDate      timestamp,
-    modifiedDate    timestamp, --new
-    is_current      boolean,
-    is_quarantined  boolean
-
+    TransID string,
+    EntryID string,
+    VisitorID string,
+    GuideID string,
+    AccID string,
+    VisitDate int64,
+    PaymentType string,
+    src_ModifiedDate int64,
+    is_quarantined bool,
+    InsertedDate timestamp,
+    ModifiedDate timestamp,
+    is_current bool
 );
 
---create quality check temp table
+
 create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as
-select distinct TransID, EntryID,
-    VisitorID,
-    GuideID,
-    AccID,
-    VisitDate,
-    ConservationFee,
-    PaymentType,
-    InsertDate,
-case
-    when VisitorID is null or AccID is null then TRUE
-    else FALSE
-end as is_quarantined
-
-from(
-    select TransID, EntryID,
-    VisitorID,
-    GuideID,
-    AccID,
-    VisitDate,
-    ConservationFee,
-    PaymentType,
-    InsertDate
+select TransID,EntryID, VisitorID, GuideID, AccID, VisitDate,PaymentType, ModifiedDate as src_ModifiedDate,
+    case
+        when TransID is null or EntryID is null then TRUE
+        else FALSE
+    end as is_quarantined
+from (
+    select
+    TransID,EntryID, VisitorID, GuideID, AccID, VisitDate,PaymentType, ModifiedDate
     from `project-a2ce378b-71f9-4087-95b.bronze_dataset.billing`
-);
+    );
 
---apply SCD type2
-merge int `project-a2ce378b-71f9-4087-95b.silver_dataset.billing` as target
+merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.billing` as target
 using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as source
-on target.VisitorID = source.VisitorID
+on target.TransID = source.TransID
 and target.is_current = TRUE
 
---mark history data
 when matched and (
-    target.TransID <> source.TransID OR
-    target.EntryID <> source.EntryID OR
-    target.VisitorID <> source.VisitorID OR
-    target.GuideID <> source.GuideID OR
-    target.AccID <> source.AccID OR
-    target.VisitDate <> source.VisitDate OR
-    target.ConservationFee <> source.ConservationFee OR
-    target.PaymentType <> source.PaymentType OR
-    target.InsertDate <> source.InsertDate OR
-    target.is_quarantined <> source.is_quarantined
+    target.EntryID <> source.EntryID OR 
+    target.VisitorID <> source.VisitorID OR 
+    target.GuideID <> source.GuideID OR 
+    target.AccID <> source.AccID OR 
+    target.VisitDate <> source.VisitDate OR 
+    target.PaymentType <> source.PaymentType OR 
+    target.src_ModifiedDate <> source.src_ModifiedDate OR 
+    target.is_quarantined <> source.is_quarantined 
 )
 then update set
     target.is_current = FALSE,
-    target.InsertDate = CURRENT_TIMESTAMP()
-
---insert new and update record
+    target.ModifiedDate = CURRENT_TIMESTAMP()
 
 when not matched
 then insert(
@@ -123,12 +102,12 @@ then insert(
     GuideID,
     AccID,
     VisitDate,
-    ConservationFee,
     PaymentType,
-    InsertDate,
-    modifiedDate,
-    is_current,
-    is_quarantined
+    src_ModifiedDate,
+    is_quarantined,
+    InsertedDate,
+    ModifiedDate,
+    is_current
 )
 values(
     source.TransID,
@@ -137,16 +116,16 @@ values(
     source.GuideID,
     source.AccID,
     source.VisitDate,
-    source.ConservationFee,
     source.PaymentType,
-    source.InsertDate,
+    source.src_ModifiedDate,
+    source.is_quarantined,
     CURRENT_TIMESTAMP(),
-    TRUE,
-    source.is_quarantined
-)
--- drop quality checks table
-drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
+    CURRENT_TIMESTAMP(),
+    TRUE
+);
 
+drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
+---------------------------------------------------------------------------------------------------------------------------
 --PARK_ENTRIES TABLE 
 create table if not exists  `project-a2ce378b-71f9-4087-95b.silver_dataset.park_entries`(
     EntryID         string,
