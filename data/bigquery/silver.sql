@@ -130,11 +130,13 @@ drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_chec
 create table if not exists  `project-a2ce378b-71f9-4087-95b.silver_dataset.park_entries`(
     EntryID         string,
     VisitorID       string,
-    EntryDate       timestamp,
-    ExitDate        timestamp,
+    EntryDate       int64,
+    ExitDate        int64,
     EntryGateID     string,
     AccID           string,
     VehicleReg      string,
+    src_InsertedDate    int64,
+    src_ModifiedDate    int64,
     InsertedDate    timestamp,
     ModifiedDate    timestamp,
     is_quarantined  bool,
@@ -142,39 +144,41 @@ create table if not exists  `project-a2ce378b-71f9-4087-95b.silver_dataset.park_
 );
 
 --create quality checks table
-create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks_park_entries`as
-select * ,
+create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`as
+select  EntryID,VisitorID,EntryDate,ExitDate,EntryGateID,AccID,VehicleReg,InsertedDate as src_InsertedDate,ModifiedDate as src_ModifiedDate,
 case 
-    when EntryID is null or VisitorID is null or AccID is null then TRUE
+    when EntryID is null or VisitorID is null then TRUE
     else FALSE
 end is_quarantined
 from(
-    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.park_entries`
+    select EntryID,VisitorID,EntryDate,ExitDate,EntryGateID,AccID,VehicleReg,InsertedDate,ModifiedDate,
+    
+     from `project-a2ce378b-71f9-4087-95b.bronze_dataset.park_entries`
 );
 --apply SCD type 2
 
 merge into `project-a2ce378b-71f9-4087-95b.silver_dataset.park_entries` as target
-using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks_park_entries` as source
+using `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as source
 on target.EntryID = source.EntryID
 and target.is_current = TRUE
 
 --mark existing record
 when matched and (
-    target.EntryID <> source.EntryID OR
+    
     target.VisitorID <> source.VisitorID OR
     target.EntryDate <> source.EntryDate OR
     target.ExitDate <> source.ExitDate OR
     target.EntryGateID <> source.EntryGateID OR
     target.AccID <> source.AccID OR
     target.VehicleReg <> source.VehicleReg OR
-    
-    target.ModifiedDate <> source.ModifiedDate OR
-    target.is_quarantined <> source.is_quarantined OR
+    target.src_InsertedDate <> source.src_InsertedDate OR
+    target.src_ModifiedDate <> source.src_ModifiedDate OR
+    target.is_quarantined <> source.is_quarantined 
     
 
 )
 then update set 
-        target.is_current = FALSE
+        target.is_current = FALSE,
         target.ModifiedDate = CURRENT_TIMESTAMP()
 
 --insert new  and update
@@ -184,9 +188,11 @@ then insert(
     VisitorID,
     EntryDate,
     ExitDate,
-    EntryGateI,
+    EntryGateID,
     AccID,
     VehicleReg,
+    src_InsertedDate,
+    src_ModifiedDate,
     InsertedDate,
     ModifiedDate,
     is_quarantined,
@@ -198,17 +204,19 @@ values(
     source.VisitorID,
     source.EntryDate,
     source.ExitDate,
-    source.EntryGateI,
+    source.EntryGateID,
     source.AccID,
     source.VehicleReg,
+    source.src_InsertedDate,
+    source.src_ModifiedDate,
     CURRENT_TIMESTAMP(),
-    CURRENT_TIMESTAMP()
+    CURRENT_TIMESTAMP(),
     source.is_quarantined,
     TRUE 
 );
 
 --drop quality checks table
-drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks_park_entries`
+drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`
 
 -- VISITORS TABLE
 
@@ -221,21 +229,24 @@ create table if not exists `project-a2ce378b-71f9-4087-95b.silver_dataset.visito
     WildCardMember  string,
     DOB             string,
     ContactNo       string,
-    ModifiedDate    timestamp,
-    InsertDate      timestamp,
+    src_ModifiedDate    int64,
     is_quarantined  bool,
+    InsertedDate      timestamp,
+    ModifiedDate    timestamp,
     is_current      bool
 );
 
 --create a quality-checks temp table
 create or replace table `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks` as
-select * ,
+select VisitorID,FirstName,LastName,ID_Passport_No,Nationality,WildCardMember,DOB,ContactNo,SAFE_CAST(ModifiedDate AS INT64) as src_ModifiedDate,
     case
         when VisitorID is null or ID_Passport_No is null then TRUE
         else FALSE
     end is_quarantined
 from(
-    select * from `project-a2ce378b-71f9-4087-95b.bronze_dataset.visitors`
+    select 
+        VisitorID,FirstName,LastName,ID_Passport_No,Nationality,WildCardMember,DOB,ContactNo,ModifiedDate
+     from `project-a2ce378b-71f9-4087-95b.bronze_dataset.visitors`
 );
 
 --apply scd type 2
@@ -246,14 +257,16 @@ and target.is_current = TRUE
 
 --mark existing records as history
 when matched and (
-    target.VisitorID <> source.VisitorID OR
+    
     target.FirstName <> source.FirstName OR
     target.LastName <> source.LastName OR
     target.ID_Passport_No <> source.ID_Passport_No OR
     target.Nationality <> source.Nationality OR
     target.WildCardMember <> source.WildCardMember OR
-    target.DOB <> source.DOB OR
+    target.DOB <> CAST(source.DOB AS STRING) OR
     target.ContactNo <> source.ContactNo OR
+    target.src_ModifiedDate <> source.src_ModifiedDate OR
+    target.is_quarantined <> source.is_quarantined 
     
 )
 then update set
@@ -271,9 +284,10 @@ then insert(
     WildCardMember,
     DOB,
     ContactNo,
-    ModifiedDate,
-    InsertDate,
+    src_ModifiedDate,
     is_quarantined,
+    InsertedDate,
+    ModifiedDate,
     is_current      
 )
 values(
@@ -283,13 +297,14 @@ values(
     source.ID_Passport_No,
     source.Nationality,
     source.WildCardMember,
-    source.DOB,
+    CAST(source.DOB AS STRING),
     source.ContactNo,
-    CURRENT_TIMESTAMP(),
-    CURRENT_TIMESTAMP(),
+    source.src_ModifiedDate, 
     source.is_quarantined,
+    CURRENT_TIMESTAMP(),
+    CURRENT_TIMESTAMP(),
     TRUE
-)
+);
 
 --drop quality checks table
 drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
