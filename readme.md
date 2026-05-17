@@ -56,5 +56,7 @@ I built a "Data Pipeline" that collects information from the park gates, recepti
 
 ---
 
-Built and designed by Hulisani Raatshiedana
+What inspired me to build this project is because outside my professional work I love camping in kruger National Park.
+
+Built and designed by Hulisani Ratshiedana
 **Contact:** rachyhuly17@gmail.com
