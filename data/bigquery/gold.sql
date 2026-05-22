@@ -1,6 +1,11 @@
 -- GOLD LAYER FOR BUSINESS USECASE
 -- Answer the business cases
 
+-- 1. which camp gets crowded during normal days
+-- 1.2 letaba and mopani are the most crowded camps
+
+create table if not exists `project-a2ce378b-71f9-4087-95b.gold_dataset.crowded_camps` as
+
 SELECT 
     ANY_VALUE(p.VehicleReg) AS VehicleReg,
     ANY_VALUE(TIMESTAMP_MILLIS(p.EntryDate)) AS EntryDate,
@@ -16,6 +21,7 @@ ORDER BY Normal_days_count_visited DESC
 ;
 
  -- 1.2 During september Letaba still dominate then, Crocodile bridge and shimuwini
+ create table if not exists `project-a2ce378b-71f9-4087-95b.gold_dataset.crowded_camps_on_september` as
 SELECT 
     ANY_VALUE(p.VehicleReg) AS VehicleReg,
     ANY_VALUE(TIMESTAMP_MILLIS(p.EntryDate)) AS EntryDate,
@@ -33,6 +39,7 @@ ORDER BY Sept_count_visited DESC
 ;
 -- 2. Between Visitors with wild card and visitors without wild-cards who gets to visit more in the park ?
 -- 2.1 Visitors without wildcards visit more than those with wildcards
+create table if not exists `project-a2ce378b-71f9-4087-95b.gold_dataset.wildcardmembers` as
 SELECT 
     COUNT(WildCardMember) AS Wildcard_or_NoWildcard,
     WildCardMember
@@ -43,6 +50,7 @@ ORDER BY WildCardMember DESC
 ;
 -- 3. Which payment type do visitors like to pay with
 -- 3.2 visitors love to pay with cash and with credit card
+create table if not exists `project-a2ce378b-71f9-4087-95b.gold_dataset.paymentmethod` as
 SELECT 
     ANY_VALUE(VisitorID) AS VisitorID,
     ANY_VALUE(AccID) AS AccID,
@@ -56,7 +64,7 @@ ORDER BY Number_of_PaymentType DESC
 
 -- 4. Which month other than September do people also like visiting the Park ?
 -- 4.1 August is where people visit kruger more often
-
+create table if not exists `project-a2ce378b-71f9-4087-95b.gold_dataset.mostmonthvisit` as
 SELECT 
     ANY_VALUE(VisitorID) AS VisitorID,
     ANY_VALUE(PaymentType) AS PaymentType,
