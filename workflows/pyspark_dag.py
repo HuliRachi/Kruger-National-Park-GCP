@@ -1,3 +1,5 @@
+# Step 1 - Import modules
+
 import airflow 
 from airflow import DAG
 from datetime import timedelta
@@ -19,6 +21,8 @@ PYSPARK_JOB_2 = {"reference": {"project_id": PROJECT_ID}, "placement":{"cluster_
 GCS_JOB_FILE_3 = f"gs://{COMPOSER_BUCKET}/data/INGESTION/gate_codesToBronze.py"
 PYSPARK_JOB_3 = {"reference": {"project_id": PROJECT_ID}, "placement":{"cluster_name":CLUSTER_NAME}, "pyspark_job":{"main_python_file_uri":GCS_JOB_FILE_3}}
 
+# Step 2 - Define default arguments
+
 ARGS = {
     "owner": "RACHI HULI",
     "start_date": None,
@@ -27,6 +31,8 @@ ARGS = {
     "retry_delay": timedelta(minutes=5)
 }
 
+# Step 3 - Instantiate the DAG
+
 with DAG(
     dag_id = "pyspark_dag",
     schedule_interval = None,
@@ -34,6 +40,8 @@ with DAG(
     tags = ["pyspark", "dataproc", "etl"]
 )as dag:
     
+    # Step 4 - Define tasks
+
     pyspark_task_1 = DataprocSubmitJobOperator(
         task_id = "pyspark_task_1",
         job = PYSPARK_JOB_1,
@@ -52,5 +60,7 @@ with DAG(
         region = REGION,
         project_id = PROJECT_ID
     )
+
+# Step 5 - Define Dependencies
 
 pyspark_task_1 >> pyspark_task_2 >> pyspark_task_3

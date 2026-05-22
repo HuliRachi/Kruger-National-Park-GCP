@@ -1,8 +1,12 @@
+# Step 1 - Import all modules
+
 import airflow
 from airflow import DAG
 from datetime import timedelta
 from airflow.utils.dates import days_ago
 from airflow.operators.dagrun_operator import TriggerDagRunOperator
+
+# Steep 2 - Define Default Arguments
 
 ARGS ={
     "owner":"RACHI HULI",
@@ -16,6 +20,8 @@ ARGS ={
     "retry_delay":timedelta(minutes=5)
 }
 
+# Step 3 - Instantiate the DAG
+
 with DAG (
     dag_id = "parent_dag",
     schedule_interval = "0 5 * * *",
@@ -24,6 +30,8 @@ with DAG (
     tags = ["parent", "orchestration", "etl"]
 
 )as dag:
+    
+    # Step 4 - Define tasks
     
     trigger_pyspark_dag = TriggerDagRunOperator(
         task_id = "trigger_pyspark_dag",
@@ -37,4 +45,6 @@ with DAG (
         wait_for_completion = True,
     )
 
-    trigger_pyspark_dag >> trigger_bigquery_dag
+# Step 5 - Define Dependencies
+
+trigger_pyspark_dag >> trigger_bigquery_dag
