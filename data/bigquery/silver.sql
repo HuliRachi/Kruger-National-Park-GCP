@@ -151,7 +151,7 @@ case
     else FALSE
 end is_quarantined
 from(
-    select EntryID,VisitorID,EntryDate,ExitDate,EntryGateID,AccID,VehicleReg,InsertedDate,ModifiedDate,
+    select EntryID,VisitorID,EntryDate,ExitDate,EntryGateID,AccID,VehicleReg,InsertedDate,ModifiedDate
     
      from `project-a2ce378b-71f9-4087-95b.bronze_dataset.park_entries`
 );
@@ -216,7 +216,7 @@ values(
 );
 
 --drop quality checks table
-drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`
+drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
 
 -- VISITORS TABLE
 
