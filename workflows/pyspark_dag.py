@@ -10,7 +10,7 @@ from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobO
 PROJECT_ID = "project-a2ce378b-71f9-4087-95b" 
 REGION = "africa-south1"
 CLUSTER_NAME = "kruger-cluster" 
-COMPOSER_BUCKET = "africa-south.............." # composer bucket name
+COMPOSER_BUCKET = "africa-south1-kruger-compos-2b9db095-bucket" # composer bucket name
 
 GCS_JOB_FILE_1 = f"gs://{COMPOSER_BUCKET}/data/INGESTION/kruger_mysqlToLanding.py"
 PYSPARK_JOB_1 = {"reference": {"project_id": PROJECT_ID}, "placement":{"cluster_name":CLUSTER_NAME}, "pyspark_job":{"main_python_file_uri":GCS_JOB_FILE_1}}
