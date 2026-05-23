@@ -2,7 +2,7 @@
 
 ## 📌 What is this project?
 
-This project helps **Kruger National Park** manage large crowds during free entrance and busy days in different camp sites. I built a system on **Google Cloud (GCP)** that looks at how many people enter the park with **wild-cards** or without wild-cards. This helps managers know when to hire more staff and where to send more security guards.
+This project helps **Kruger National Park** manage large crowds during free entrance and busy days in different camp sites. I built a system on **Google Cloud (GCP)** that looks at how many people enter the park with **wild-cards** or without wild-cards. This helps Kruger-National-Park managers know when to hire more staff and where to send more security guards.
 
 ---
 
