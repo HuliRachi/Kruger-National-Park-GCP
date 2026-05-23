@@ -125,7 +125,7 @@ values(
 );
 
 drop table if exists `project-a2ce378b-71f9-4087-95b.silver_dataset.quality_checks`;
----------------------------------------------------------------------------------------------------------------------------
+
 --PARK_ENTRIES TABLE 
 create table if not exists  `project-a2ce378b-71f9-4087-95b.silver_dataset.park_entries`(
     EntryID         string,
