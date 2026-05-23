@@ -19,5 +19,5 @@ options:
 
 substitutions:
   _DAGS_DIRECTORY: 'workflows/'
-  _DAGS_BUCKET: 'africa.......huli....bucket' # change this
+  _DAGS_BUCKET: 'africa-south1-kruger-compos-2b9db095-bucket' # change this
   _DATA_DIRECTORY: 'data/'
