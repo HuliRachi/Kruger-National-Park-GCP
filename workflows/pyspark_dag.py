@@ -3,7 +3,7 @@
 import airflow 
 from airflow import DAG
 from datetime import timedelta
-from airflow.utils.dates import days_ago
+from datetime import datetime, timedelta
 from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobOperator
 
 
@@ -25,7 +25,7 @@ PYSPARK_JOB_3 = {"reference": {"project_id": PROJECT_ID}, "placement":{"cluster_
 
 ARGS = {
     "owner": "RACHI HULI",
-    "start_date": None,
+    "start_date": datetime(2026, 1, 1),
     "depends_on_past": False,
     "retries": 1,
     "retry_delay": timedelta(minutes=5)

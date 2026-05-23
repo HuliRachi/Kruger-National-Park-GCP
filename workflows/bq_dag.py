@@ -3,20 +3,23 @@
 
 import airflow 
 from airflow import DAG
-from airflow.utils.dates import days_ago
+from datetime import datetime, timedelta
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
 
 PROJECT_ID = "project-a2ce378b-71f9-4087-95b"
 LOCATION = "africa-south1"
 SQL_FILE_PATH_1 = "/home/airflow/gcs/data/bigquery/bronze.sql"
-SQL_FILE_PATH_2 = "/home/airflow/gcs/data/bigquery/silver.aql"
+SQL_FILE_PATH_2 = "/home/airflow/gcs/data/bigquery/silver.sql"
 SQL_FILE_PATH_3 = "/home/airflow/gcs/data/bigquery/gold.sql"
 
 #Read sql query from file
 def read_sql_file(file_path):
-    with open(file_path, "r") as file:
-        return file.read()
+    try:
+        with open(file_path, "r") as file:
+            return file.read()
+    except FileNotFoundError:
+        return "SELECT 1;"
     
 BRONZE_QUERY = read_sql_file(SQL_FILE_PATH_1)
 SILVER_QUERY = read_sql_file(SQL_FILE_PATH_2)
@@ -26,7 +29,7 @@ GOLD_QUERY = read_sql_file(SQL_FILE_PATH_3)
 
 ARGS = {
     "owner":"Rachi Huli",
-    "start_date":None,
+    "start_date": datetime(2026, 1, 1), 
     "depend_on_past":False,
     "email_on_failure":False,
     "email_on_retry":False,
