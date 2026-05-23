@@ -6,13 +6,13 @@ steps:
 
     #run the script to upload DAGs and Data to the composer bucket
 
-    - name: 'python'
-      entrypoint: python
-      args:
-        - 'utils/add_dags_to_composer.py'
-        - '--dags_directory=${_DAGS_DIRECTORY}'
-        - '--dags_bucket=${_DAGS_BUCKET}'
-        - '--data_directory=${_DATA_DIRECTORY}'
+  - name: 'python'
+    entrypoint: python
+    args:
+      - 'utils/add_dags_to_composer.py'
+      - '--dags_directory=${_DAGS_DIRECTORY}'
+      - '--dags_bucket=${_DAGS_BUCKET}'
+      - '--data_directory=${_DATA_DIRECTORY}'
 
 options:
   logging: CLOUD_LOGGING_ONLY
