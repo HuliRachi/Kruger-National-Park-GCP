@@ -22,6 +22,8 @@ I built a "Data Pipeline" that collects information from the park gates, recepti
 
 Using the dashboard below, managers can now understand which Kruger Camps, Gates gets crowded and maximize security guards and staff to ensure safety of animals.
 
+### PowerBI Dashboard analysis
+
 <img src="architecture_diagram_and_DashboardBI/PowerBI_Kruger_Analysis.png" alt="PowerBI_Dashboard" width="700" height="350">
 
 ### GCP services i used:
