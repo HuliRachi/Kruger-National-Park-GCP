@@ -42,9 +42,13 @@ Using the dashboard below, managers can now understand which Kruger Camps, Gates
 
 <img src="architecture_diagram_and_DashboardBI/architecture.png" alt="Diagram_Architecture" width="700" height="350">
 
-- Data(Kruger_data, Free_entrance, Gate_codes_data) comes fro different sources in a form of csv. I then ingest them to Cloud Storage in Landing folder to centralize them. From landing i ingest them to bronze for raw data, then i move them silver for cleaning and using SCD type 2 to keep the history record for incremental tables, then i move them to Gold layer where i aggregate them for business use case. All these steps done using airflow.
+- Data(Kruger_data, Free_entrance, Gate_codes_data) comes from different sources in a form of csv. I then ingest them to Cloud Storage in Landing folder to centralize them. From landing i ingest them to bronze for raw data, then i move them silver for cleaning and using SCD type 2 to keep the history record for incremental tables, then i move them to Gold layer where i aggregate them for business use case. All these steps done using airflow.
 
 ---
+
+### ER Diagram for Kruger tables
+
+## <img src="architecture_diagram_and_DashboardBI/Kruger_ER_Diagram_Tables.png" alt="ER_Diagram" width="700" height="350">
 
 ## 🚀 What this project shows
 
