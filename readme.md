@@ -1,6 +1,8 @@
 # 🐘 Kruger National Park: End-to-End ETL Pipeline on GCP
 
-`What inspired me to build this project is because outside my professional work I love camping in kruger National Park.`
+<code>I dedicate this project to my role model <i>JOHN DEVAR</i> who is a surgeon, who inspired me to work hard since i was in my final year.</code>
+
+`Outside my professional work i love camping in the Kruger National Park`
 
 ## 📌 What is this project?
 
