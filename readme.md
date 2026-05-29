@@ -1,5 +1,7 @@
 # 🐘 Kruger National Park: End-to-End ETL Pipeline on GCP
 
+`What inspired me to build this project is because outside my professional work I love camping in kruger National Park.`
+
 ## 📌 What is this project?
 
 This project helps **Kruger National Park** manage large crowds during free entrance and busy days in different camp sites. I built a system on **Google Cloud (GCP)** that looks at how many people enter the park with **wild-cards** or without wild-cards. This helps Kruger-National-Park managers know when to hire more staff and where to send more security guards.
@@ -70,8 +72,6 @@ Using the dashboard below, managers can now understand which Kruger Camps, Gates
 - **Better Planning:** Managers can now stop guessing and start using real numbers to run the park.
 
 ---
-
-What inspired me to build this project is because outside my professional work I love camping in kruger National Park.
 
 Built and designed by Hulisani Ratshiedana
 **Contact:** rachyhuly17@gmail.com
