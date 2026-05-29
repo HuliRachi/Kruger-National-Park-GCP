@@ -26,6 +26,11 @@ Using the dashboard below, managers can now understand which Kruger Camps, Gates
 
 <img src="architecture_diagram_and_DashboardBI/PowerBI_Kruger_Analysis.png" alt="PowerBI_Dashboard" width="700" height="350">
 
+1. **Bar graph** - This graph shows which campsite gets more crowded during september free entrance
+2. **Pie Chart graph** - This graph shows visitors and their payment type
+3. **Ring graph** - This graph shows visitors who access the park using wild card and visitors who access the park without wild cards
+4. **Area graph** - This graph shows which month do visitors love visiting kruger national park
+
 ### GCP services i used:
 
 - **Google Cloud Storage:** For storing raw and processed datafiles.
