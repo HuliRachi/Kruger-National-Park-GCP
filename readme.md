@@ -35,15 +35,16 @@ Using the dashboard below, managers can now understand which Kruger Camps, Gates
 3. **Ring graph** - This graph shows visitors who access the park using wild card and visitors who access the park without wild cards
 4. **Area graph** - This graph shows which month do visitors love visiting kruger national park
 
-### GCP services i used:
+### 🛠️ Tech Stack & Architecture
 
-- **Google Cloud Storage:** For storing raw and processed datafiles.
-- **BigQuery:** For storing and querying structured data.
-- **Cloud SQL:** Database to store data before centralizing it to Landing
-- **Dataproc:** For processing large-scale data with Apache Spark
-- **Cloud Build:** For CI/CD with the help of Github
-- **Cloud Composer:** For automating ETL pipelines and workflow orchestration
-- **IAM:** Enables other service to communicate with the other services, like Cloud Composer trying to access resources on BigQuery
+- **Orchestration:** Cloud Composer (Apache Airflow) for end-to-end workflow automation and dependency management.
+- **Storage & Data Lake:** Google Cloud Storage (GCS) structured into Landing, Bronze, Silver, and Gold zones.
+- **Relational Database:** Cloud SQL (PostgreSQL/MySQL) hosting transactional gate ingestion data.
+- **Data Processing:** Dataproc (Apache Spark) handling distributed data cleaning and data transformation.
+- **Data Warehouse:** BigQuery for high-performance analytics, gold-layer aggregation, and serving layers.
+- **CI/CD Automation:** Cloud Build integrated with GitHub for continuous integration of Airflow DAGs and Spark scripts
+- **Security & Governance:** IAM roles and Service Accounts configured with the principle of least privilege.
+- **BI / Analytics:** Power BI for downstream dashboarding and crowd-management reporting.
 
 ---
 
